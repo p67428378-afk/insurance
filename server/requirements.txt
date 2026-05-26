@@ -1,9 +1,8 @@
 fastapi
 uvicorn
 sqlalchemy
-pydantic
-pydantic-settings
 psycopg2-binary
+pydantic
 pytest
 httpx
-greenlet
+pytest-asyncio
