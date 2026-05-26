@@ -1,38 +1,25 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import CalculatorForm from './CalculatorForm';
-import * as api from '../services/api';
-
-vi.mock('../services/api');
+import { describe, it, expect, vi } from 'vitest';
 
 describe('CalculatorForm', () => {
-  test('renders the form and calculates premium', async () => {
-    api.calculatePremium.mockResolvedValue({ final_premium: 812.50 });
+  it('should call onCalculate with the correct data on submit', () => {
+    const onCalculate = vi.fn();
+    render(<CalculatorForm onCalculate={onCalculate} />);
 
-    render(<CalculatorForm />);
+    const ncbInput = screen.getByLabelText(/NCB Percentage/i);
+    const multiplierInput = screen.getByLabelText(/Vehicle Multiplier/i);
+    const calculateButton = screen.getByText(/Calculate Premium/i);
 
-    // Check for initial elements
-    expect(screen.getByText('Premium Estimation')).toBeInTheDocument();
-    expect(screen.getByLabelText(/NCB Percentage/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Vehicle Multiplier/i)).toBeInTheDocument();
+    fireEvent.change(ncbInput, { target: { value: '0.4' } });
+    fireEvent.change(multiplierInput, { target: { value: '3.0' } });
 
-    // Simulate user input
-    fireEvent.change(screen.getByLabelText(/NCB Percentage/i), { target: { value: '0.35' } });
-    fireEvent.change(screen.getByLabelText(/Vehicle Multiplier/i), { target: { value: '2.5' } });
+    fireEvent.click(calculateButton);
 
-    // Click the calculate button
-    fireEvent.click(screen.getByText('Calculate Premium'));
-
-    // Wait for the premium to be displayed
-    await waitFor(() => {
-      expect(screen.getByText('812.50')).toBeInTheDocument();
-    });
-
-    // Check if the API was called with the correct data
-    expect(api.calculatePremium).toHaveBeenCalledWith({
+    expect(onCalculate).toHaveBeenCalledWith({
       base_rate: 500,
-      ncb_percentage: 0.35,
-      vehicle_multiplier: 2.5,
+      ncb_percentage: 0.4,
+      vehicle_multiplier: 3.0,
     });
   });
 });
