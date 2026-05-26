@@ -34,5 +34,10 @@
     "@testing-library/jest-dom": "^6.1.5",
     "jsdom": "^23.2.0",
     "react-modal": "^3.16.1"
+  },
+  "engines": {
+    "npm": ">=8.0.0",
+    "yarn": "!",
+    "pnpm": "!"
   }
 }
